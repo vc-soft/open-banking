@@ -1,0 +1,785 @@
+swagger: '2.0'
+info:
+  title: Domestic Payment Initiation - Domestic Payment
+  version: 1.0.0
+  description: 'Permite realizar la iniciacion de una orden de pago '
+  x-ibm-name: domestic-payment-initiation-domestic-payment
+basePath: public-partner/testing/open-banking/v1/payment-initiation
+paths:
+  /domestic-payment:
+    post:
+      operationId: domesticPayment
+      x-api-type: traditional
+      summary: Crear orden de pago
+      description: >-
+        ### Clasificación de la información: Confidencial
+
+        Permite recibir y ejecutar una única instrucción de iniciación de pago a
+        nivel nacional        
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          type: string
+          description: Token de Autorización tipo Portador como lo indica la RFC 6750
+        - name: x-fapi-auth-date
+          in: header
+          required: false
+          type: string
+          description: >-
+            Indica la última vez que el usuario final se autenticó en la
+            aplicación del tercero
+        - name: x-fapi-customer-ip-address
+          in: header
+          required: false
+          type: string
+          description: >-
+            Dirección IP del usuario final que está haciendo uso de la
+            aplicación del tercero
+        - name: x-fapi-interaction-id
+          in: header
+          required: true
+          type: string
+          description: >-
+            Identificador único de transacción que sea común entre el llamado
+            del tercero y la respuesta del recurso, para fines de trazabilidad.
+        - name: accept
+          in: header
+          required: false
+          type: string
+          description: >-
+            Indica el formato de mensajería que es aceptado como respuesta de la
+            API (application/json)
+        - name: content-type
+          in: header
+          required: true
+          type: string
+          description: >-
+            Indica el formato de mensajería que es enviado hacia la API
+            (application/json)    
+        - name: requestBody
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CustomerCreditTransferInitiationDataMsg'
+      responses:
+        '201':
+          x-success-response: Successfull
+          schema:
+            $ref: '#/definitions/CustomerPaymentStatusReportMsg'
+          description: Creado
+          x-ibm-languages:
+            description:
+              en: Successful response.
+          headers:
+            content-type:
+              type: string
+              description: >-
+                Indica el formato de mensajería que es aceptado como respuesta
+                de la API (application/json)   
+            x-fapi-interaction-id:
+              type: string
+              description: >-
+                Identificador único de transacción que sea común entre el
+                llamado del tercero y la respuesta del recurso, para fines de
+                trazabilidad.
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '500':
+          $ref: '#/responses/500'
+      security:
+        - clientSecret: []
+          clientId: []
+      tags:
+        - Domestic Payment
+  /domestic-payment/{InstructionIdentification}:
+    get:
+      operationId: domesticPaymentStatus
+      x-api-type: traditional
+      summary: Consultar estado orden de pago
+      description: |-
+        ### Clasificación de la información: Confidencial
+        Devuelve información de una transacción en específico 
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          type: string
+          description: Token de Autorización tipo Bearer como lo indica la RFC 6750
+        - name: x-fapi-auth-date
+          in: header
+          required: false
+          type: string
+          description: >-
+            Indica la última vez que el usuario final se autenticó en la
+            aplicación del tercero Example : Tue, 05 Jul 2023 14:43:28 GMT
+        - name: x-fapi-customer-ip-address
+          in: header
+          required: false
+          type: string
+          description: >-
+            Dirección IP del usuario final que está haciendo uso de la
+            aplicación del tercero Example : 162.168.0.51
+        - name: x-fapi-interaction-id
+          in: header
+          required: true
+          type: string
+          description: >-
+            Identificador único de transacción que sea común entre el llamado
+            del tercero y la respuesta del recurso, para fines de trazabilidad.
+            Example : 7f7defe7-0b22-4d8e-933d-f2bff9968447
+        - name: InstructionIdentification
+          in: path
+          required: true
+          type: string
+          description: >-
+            Identificador punto a punto asignado para la transacción que se
+            requiere consultar Example : a96910fa-e83c-4e70-836e-d4c39d744812
+        - name: accept
+          in: header
+          required: false
+          type: string
+          description: >-
+            Indica el formato de mensajería que es aceptado como respuesta de la
+            API (application/json)
+      responses:
+        '200':
+          x-success-response: Successfull
+          schema:
+            $ref: '#/definitions/CustomerPaymentStatusReportMsg'
+          description: OK
+          x-ibm-languages:
+            description:
+              en: Successful response.
+          headers:
+            content-type:
+              type: string
+              description: >-
+                Indica el formato de mensajería que es aceptado como respuesta
+                de la API (application/json)
+            x-fapi-interaction-id:
+              type: string
+              description: >-
+                Identificador único de transacción que sea común entre el
+                llamado del tercero y la respuesta del recurso, para fines de
+                trazabilidad.
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '500':
+          $ref: '#/responses/500'
+      security:
+        - clientSecret: []
+          clientId: []
+      tags:
+        - Domestic Payment
+  /health:
+    head:
+      operationId: healthOperation
+      responses:
+        '200':
+          description: Respuesta exitosa.
+          x-ibm-languages:
+            description:
+              en: Successful response.
+      security:
+        - clientId: []
+          clientSecret: []
+      tags:
+        - Monitoring
+responses:
+  '400':
+    schema:
+      $ref: '#/definitions/failure'
+    description: Error en la solicitud.
+    x-ibm-languages:
+      description:
+        en: Error in the request.
+    examples:
+      application/vnd.bancolombia.v4+json:
+        Code: 400
+        Message: Bad Resquest
+        Errors:
+          - ErrorCode: SA400
+            Detail: Número de página no proporcionado.
+    headers:
+      content-type:
+        type: string
+        description: >-
+          Indica el formato de mensajería que es aceptado como respuesta de la
+          API (application/json)
+      x-fapi-interaction-id:
+        type: string
+        description: >-
+          Identificador único de transacción que sea común entre el llamado del
+          tercero y la respuesta del recurso, para fines de trazabilidad.
+  '401':
+    schema:
+      $ref: '#/definitions/failure'
+    description: Credenciales incorrectas.
+    x-ibm-languages:
+      description:
+        en: Incorrect credentials.
+    examples:
+      application/vnd.bancolombia.v4+json:
+        Code: 401
+        Message: Unauthorized
+        Errors:
+          - ErrorCode: SA401
+            Detail: Consulta no autorizada por el usuario.
+    headers:
+      Content-type:
+        type: string
+        description: >-
+          Indica el formato de mensajería que es aceptado como respuesta de la
+          API (application/json)
+      x-fapi-interaction-id:
+        type: string
+        description: >-
+          Identificador único de correlación que permite hacer trazabilidad de
+          la transacción de 
+  '500':
+    schema:
+      $ref: '#/definitions/failure'
+    description: Error interno del servidor.
+    x-ibm-languages:
+      description:
+        en: Internal server error.
+    examples:
+      application/vnd.bancolombia.v4+json:
+        Code: 500
+        Message: Internal Server Error
+        Errors:
+          - ErrorCode: SP500
+            Detail: Ha ocurrido un error interno controlado en el servidor.
+    headers:
+      content-type:
+        type: string
+        description: >-
+          Indica el formato de mensajería que es aceptado como respuesta de la
+          API (application/json)
+      x-fapi-interaction-id:
+        type: string
+        description: >-
+          Identificador único de transacción que sea común entre el llamado del
+          tercero y la respuesta del recurso, para fines de trazabilidad.
+definitions:
+  CustomerPaymentStatusReportMsg:
+    type: object
+    required:
+      - Data
+    properties:
+      Data:
+        type: object
+        required:
+          - CustomerPaymentStatusReport
+        properties:
+          CustomerPaymentStatusReport:
+            type: object
+            required:
+              - OriginalInstructionIdentification
+              - TransactionType
+            properties:
+              OriginalInstructionIdentification:
+                type: string
+                description: >-
+                  Identificador punto a punto generado para la transacción (Debe
+                  seguir el formato UUID)
+                minLength: 36
+                maxLength: 36
+                example: a96910fa-e83c-4e70-836e-d4c39d744812
+              TransactionType:
+                type: string
+                description: Indica el tipo de transacción que se ejecutó
+                minLength: 5
+                maxLength: 6
+                enum:
+                  - OFF-US
+                  - ON-US
+                example: OFF-US
+              TransactionResult:
+                $ref: '#/definitions/TransactionResult'
+              TrackerData:
+                $ref: '#/definitions/TrackerData'
+  DebtorAccount:
+    type: object
+    required:
+      - Identification
+      - Reference
+      - Type
+    properties:
+      Identification:
+        type: string
+        description: >-
+          Identificación única de la cuenta origen de los fondos, debe ser un
+          valor ofuscado
+        minLength: 16
+        maxLength: 512
+        example: '8080021325698'
+      Reference:
+        type: string
+        description: >-
+          Últimos 4 dígitos del número de cuenta origen de los fondos NOTA: Este
+          campo no se encuentra directamente en la ISO pero se sugiere su
+          utilización (UK utiliza el campo 'SecondaryIdentification' con
+          propósitos similares, el cual tampoco se encuentra en la ISO)
+        minLength: 4
+        maxLength: 4
+        example: '4891'
+      Type:
+        type: string
+        description: >-
+          Tipo de cuenta del origen de los fondos, seguirá los códigos
+          especificados en la lista de códigos externos de la ISO 20022, se
+          sugiere crear y publicar conjuntamente una lista específica para
+          aquellos tipos de cuenta que no se pueden homologar
+        minLength: 4
+        maxLength: 4
+        enum:
+          - CACC
+          - SVGS
+          - LAAC
+        example: CACC
+  InitiationSource:
+    type: object
+    required:
+      - Name
+      - Provider
+      - Version
+    properties:
+      Name:
+        type: string
+        description: Nombre del producto de software que inicia la transacción
+        minLength: 1
+        maxLength: 140
+        example: Wompi product
+      Provider:
+        type: string
+        description: Empresa proveedora del producto de software que inicia la transacción
+        minLength: 1
+        maxLength: 35
+        example: Wompi
+      Version:
+        type: string
+        description: Versión del producto de software que inicia la transacción
+        minLength: 1
+        maxLength: 35
+        example: 1.0.0
+  DebtorAgent:
+    type: object
+    description: >-
+      Contiene información acerca de la entidad financiera que sirve la cuenta
+      origen de la transacción
+    required:
+      - FinancialInstitutionIdentification
+    properties:
+      Name:
+        type: string
+        description: >-
+          Nombre de la entidad financiera que sirve la cuenta origen de la
+          transacción
+        minLength: 1
+        maxLength: 140
+        example: Bancolombia
+      FinancialInstitutionIdentification:
+        type: string
+        description: >-
+          Código interno asignado por BANREP para la entidad financiera que
+          sirve la cuenta origen de la transacción
+        minLength: 2
+        maxLength: 4
+        example: '007'
+  CreditorAgent:
+    type: object
+    description: >-
+      Contiene información acerca de la entidad financiera que sirve la cuenta
+      destino de la transacción
+    required:
+      - FinancialInstitutionIdentification
+    properties:
+      Name:
+        type: string
+        description: >-
+          Nombre de la entidad financiera que sirve la cuenta destino de la
+          transacción
+        minLength: 1
+        maxLength: 140
+        example: Davivienda
+      FinancialInstitutionIdentification:
+        type: string
+        description: >-
+          Código interno asignado por BANREP para la entidad financiera que
+          sirve la cuenta destino de la transacción
+        minLength: 1
+        maxLength: 4
+        example: '0051'
+  Purpose:
+    type: object
+    required:
+      - Code
+    properties:
+      Code:
+        type: string
+        description: Código asignado para identificar el propósito de la transacción.
+        minLength: 1
+        maxLength: 4
+        example: GDDS
+      Proprietary:
+        type: string
+        description: Campo para identificar de forma libre el propósito de la transacción
+        minLength: 1
+        maxLength: 256
+        example: compra de transistores, EDF electronics
+  TransactionResult:
+    type: object
+    description: Código que especifica el resultado global de la transacción
+    required:
+      - Status
+    properties:
+      Status:
+        type: string
+        description: >-
+          CCódigo que especifica el resultado global de la transacción, ACCP -
+          Transacción Aceptada PDNG - Transacción pendiente RJCT - Transacción
+          rechazada
+        minLength: 4
+        maxLength: 4
+        example: RJCT
+      ErrorCode:
+        type: string
+        description: >-
+          Código que identifica el error, solo aplica si el valor del Status es
+          diferente a  "ACCP"
+        minLength: 5
+        maxLength: 10
+        example: ACC04
+      Detail:
+        type: string
+        description: >-
+          Mensaje con información acerca del error, solo aplica si el valor del
+          Status es diferente a  "ACCP"
+        minLength: 1
+        maxLength: 256
+        example: The client's account not exist
+  TrackerData:
+    type: object
+    required:
+      - DebtorAgentStatus
+      - CreditorAgentStatus
+    properties:
+      DebtorAgentStatus:
+        type: string
+        description: >-
+          Código que especifica el resultado de la transacción en el banco
+          origen, ACCP - Transacción Aceptada PDNG - Transacción Pendiente RJCT
+          - Transacción rechazada
+        minLength: 4
+        maxLength: 4
+        example: RJCT
+      CreditorAgentStatus:
+        type: string
+        description: >-
+          Código que especifica el resultado de la transacción en el banco
+          destino, ACCP - Transacción Aceptada PDNG - Transacción Pendiente RJCT
+          - Transacción rechazada
+        minLength: 4
+        maxLength: 4
+        example: ACCP
+  CustomerPaymentStatusReport:
+    type: object
+    required:
+      - CustomerPaymentStatusReport
+    properties:
+      CustomerPaymentStatusReport:
+        $ref: '#/definitions/CustomerPaymentStatusReport'
+  Debtor:
+    type: object
+    required:
+      - Identification
+      - SchemeName
+    properties:
+      Name:
+        type: string
+        description: Nombre del deudor de la transacción
+        minLength: 1
+        maxLength: 140
+        example: Edisson Sastoque
+      Identification:
+        type: string
+        description: Número de identificación del deudor de la transacción
+        minLength: 1
+        maxLength: 35
+        example: '1020804050'
+      SchemeName:
+        type: string
+        description: Tipo de identificación del deudor de la transacción
+        minLength: 2
+        maxLength: 3
+        example: CC
+  CreditorAccount:
+    type: object
+    required:
+      - Identification
+      - Reference
+      - Type
+    properties:
+      Identification:
+        type: string
+        description: Identificación única de la cuenta destino de los fondos
+        minLength: 16
+        maxLength: 512
+        example: '80800213251'
+      Reference:
+        type: string
+        description: >-
+          Últimos 4 dígitos del número de cuenta destino de los fondos NOTA:
+          Este campo no se encuentra directamente en la ISO pero se sugiere su
+          utilización (UK utiliza el campo 'SecondaryIdentification' con
+          propósitos similares, el cual tampoco se encuentra en la ISO)
+        minLength: 4
+        maxLength: 4
+        example: '1254'
+      Type:
+        type: string
+        description: >-
+          Tipo de cuenta del destino de los fondos, seguirá los códigos
+          especificados en la lista de códigos externos de la ISO 20022, se
+          sugiere crear y publicar conjuntamente una lista específica para
+          aquellos tipos de cuenta que no se pueden homologar
+        enum:
+          - CACC
+          - SVGS
+          - LAAC
+        minLength: 4
+        maxLength: 4
+        example: CACC
+  InstructedAmount:
+    type: object
+    required:
+      - Amount
+      - Currency
+    properties:
+      Amount:
+        type: number
+        format: float
+        description: Monto de la transacción, debe contener dos decimales
+        minLength: 4
+        maxLength: 15
+        example: '160000'
+      Currency:
+        type: string
+        description: >-
+          Moneda en la cual se ejecutó la transacción, debe seguir el formato de
+          la ISO 4217
+        minLength: 3
+        maxLength: 3
+        example: COP
+  Creditor:
+    type: object
+    required:
+      - Name
+      - Identification
+      - SchemeName
+    properties:
+      Name:
+        type: string
+        description: Nombre del acreedor de la transacción
+        minLength: 1
+        maxLength: 140
+        example: DEF Electronics
+      Identification:
+        type: string
+        description: Número de identificación del acreedor de la transacción
+        minLength: 1
+        maxLength: 35
+        example: '90102030'
+      SchemeName:
+        type: string
+        description: Tipo de identificación del acreedor de la transacción.
+        enum:
+          - CC
+          - NIT
+          - CE
+          - PA
+          - PATT
+        minLength: 2
+        maxLength: 3
+        example: NIT
+      RegistrationIdentification:
+        type: string
+        description: Código único del comercio destino de la trasnsaccion
+        minLength: 1
+        maxLength: 35
+        example: '10203040'
+  CustomerCreditTransferInitiationDataMsg:
+    type: object
+    required:
+      - Data
+    properties:
+      Data:
+        type: object
+        required:
+          - ConsentId
+          - CustomerCreditTransferInitiation
+        properties:
+          ConsentId:
+            type: string
+            description: >-
+              Identificador del recurso de consentimiento generado para iniciar
+              la transacción
+            minLength: 1
+            maxLength: 128
+            example: '58923'
+          CustomerCreditTransferInitiation:
+            type: object
+            required:
+              - InstructionIdentification
+              - InitiationSource
+              - PaymentMethod
+              - RequestedExecutionDate
+              - InstructedAmount
+              - DebtorAgent
+              - Creditor
+              - CreditorAgent
+              - Purpose
+            properties:
+              InstructionIdentification:
+                type: string
+                description: >-
+                  Identificador punto a punto generado por el TPP para iniciar
+                  la transacción, no cambiará a lo largo de la misma (Debe
+                  seguir el formato UUID)
+                minLength: 36
+                maxLength: 36
+                example: f7defe7-0b22-4d8e-933d-f2bff9968550
+              InitiationSource:
+                $ref: '#/definitions/InitiationSource'
+              PaymentMethod:
+                type: string
+                description: >-
+                  Especifica el medio de pago que se utilizará para mover la
+                  cantidad de dinero (TRF - Transferencia)
+                enum:
+                  - TRF
+                minLength: 3
+                maxLength: 3
+                example: TRF
+              RequestedExecutionDate:
+                type: string
+                format: date-time
+                description: >-
+                  Fecha y hora en la cual el TPP solicita iniciar el pago, debe
+                  seguir el formato YYYY-MM-DD-Thh:mm:ss.sss+/-hh:mm
+                example: '2023-10-06T15:15:13+00:00'
+              InstructedAmount:
+                $ref: '#/definitions/InstructedAmount'
+              Debtor:
+                $ref: '#/definitions/Debtor'
+              DebtorAgent:
+                $ref: '#/definitions/DebtorAgent'
+              DebtorAccount:
+                $ref: '#/definitions/DebtorAccount'
+              Creditor:
+                $ref: '#/definitions/Creditor'
+              CreditorAgent:
+                $ref: '#/definitions/CreditorAgent'
+              CreditorAccount:
+                $ref: '#/definitions/CreditorAccount'
+              Purpose:
+                $ref: '#/definitions/Purpose'
+  failure:
+    type: object
+    description: Mensaje de respuesta cuando ocurre un error.
+    required:
+      - Code
+      - Message
+    properties:
+      Code:
+        type: number
+        description: >-
+          Codigo de estado HTTP (status code) asociado al mensaje de error de la
+          respuesta del llamado a la API.
+        example: 404
+      Message:
+        type: string
+        description: >-
+          Titulo asociado al codigo de estado HTTP (status code) asociado al
+          mensaje de error de la respuesta del llamado a la API.
+        example: Not Found
+      Errors:
+        type: array
+        description: Lista de errores detectados
+        items:
+          $ref: '#/definitions/error'
+  error:
+    type: object
+    required:
+      - ErrorCode
+      - Detail
+    properties:
+      ErrorCode:
+        description: An application-specific error code, expressed as a string value.
+        type: string
+        example: BP404
+      Detail:
+        description: >-
+          A human-readable explanation specific to this occurrence of the
+          problem.
+        type: string
+        example: Requested resource could not be found
+schemes:
+  - https
+consumes:
+  - application/vnd.bancolombia.v4+json
+host: gw-baas-dev.apps.ambientesbc.lab/public-partner/testing
+produces:
+  - application/vnd.bancolombia.v4+json
+securityDefinitions:
+  clientId:
+    type: apiKey
+    in: header
+    name: Client-Id
+    x-key-type: client_id
+  clientSecret:
+    type: apiKey
+    in: header
+    name: Client-Secret
+    x-key-type: client_secret
+tags:
+  - name: Monitoring
+    description: Operaciones para realizar el monitoreo de la API
+  - name: Domestic Payment
+    description: 'Permite realizar la iniciacion de una orden de pago '
+x-ibm-configuration:
+  testable: true
+  enforced: true
+  cors:
+    enabled: true
+  phase: realized
+  catalogs:
+    Development:
+      properties:
+        catalogName: development
+        profileTls: ''
+        endpoint: https://esbdev.bancolombia.corp:3300/ESB/SOAP/Default
+    Production:
+      properties:
+        catalogName: production
+        profileTls: ''
+        endpoint: https://esbpro.bancolombia.corp:3300/ESB/SOAP/Default
+    Testing:
+      properties:
+        catalogName: testing
+        profileTls: ''
+        endpoint: https://esbqa.bancolombia.corp:3300/ESB/SOAP/Default
+    Sandbox:
+      properties:
+        catalogName: sandbox
+        profileTls: apic-tls-profile-cluster-eks-integracion-sandbox:1.0.0
+        endpoint: https://integracion-int-qa.apps.ambientesbc.lab/
+  type: rest
+x-API-Protocol:
+  Protocols: HTTPS

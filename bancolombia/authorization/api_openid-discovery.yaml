@@ -1,0 +1,444 @@
+swagger: '2.0'
+info:
+  title: Open Banking Authorization - OpenID Discovery
+  version: 1.0.0
+  description: >-
+    Endpoint que ofrece información vital sobre cómo interactuar de manera
+    segura con servicios de autenticación y autorización. Proporciona detalles
+    sobre la ubicación de los servicios clave, cómo obtener tokens de acceso y
+    hasta cómo identificar al usuario de manera segura, entre otra información
+    sobre la parametrización del authorization server y sus endpoints. 
+  x-ibm-name: openid-discovery
+  contact:
+    name: Developers Support
+    email: soporteapisinternas@bancolombia.com.co
+paths:
+  /.well-known/openid-configuration:
+    get:
+      operationId: OpenIdConfiguration
+      summary: >-
+        permite obtener la información de configuración del proveedor OpenId, es
+        un endpoint público y estándar. [RFC8259]
+      description: >
+        ### Clasificación de la información: -
+
+        Permite obtener la información de configuración del proveedor OpenId, es
+        un endpoint público y estándar. [RFC8259] 
+      parameters:
+        - name: Content-Type
+          required: true
+          description: >-
+            Indica el tipo de contenido de la solicitud. Ejemplo:
+            application/json
+          in: header
+          type: string
+        - name: Accept
+          in: header
+          required: false
+          type: string
+          description: >-
+            Indica el tipo de contenido que el tercero puede entender o
+            procesar. Ejemplo: application/json 
+      responses:
+        '200':
+          x-success-response: Successfull
+          schema:
+            $ref: '#/definitions/GetOpenIdConfigurationResponse'
+          description: Respuesta Exitosa
+          x-ibm-languages:
+            description:
+              en: Successful response.
+          headers:
+            Content-Type:
+              type: string
+              description: >-
+                Indica el tipo de contenido de la respuesta. Ejemplo:
+                application/json
+  /.well-known/openid-configuration/health:
+    head:
+      operationId: healthOperation
+      responses:
+        '200':
+          description: Respuesta exitosa.
+          x-ibm-languages:
+            description:
+              en: Successful response.
+      security:
+        - clientId: []
+          clientSecret: []
+      tags:
+        - Monitoring
+definitions:
+  scopes:
+    type: string
+    example: accounts
+    enum:
+      - address
+      - email
+      - openid
+      - offline_access
+      - phone
+      - profile
+      - accounts
+      - accounts-ob
+      - payments
+  response_type:
+    type: string
+    example: id_token
+    enum:
+      - code
+      - code id_token
+  subject_type:
+    type: string
+    example: public
+    enum:
+      - public
+      - pairwise
+  alg_value:
+    type: string
+    example: RS256
+    enum:
+      - PS384
+      - RS384
+      - HS256
+      - HS512
+      - RS256
+      - HS384
+      - PS256
+      - PS512
+      - RS512
+      - ES256
+      - ES384
+      - ES512
+  claims:
+    type: string
+    example: auth_time
+    enum:
+      - sub
+      - iss
+      - auth_time
+      - acr
+      - name
+      - given_name
+      - profile
+      - picture
+  response_mode:
+    type: string
+    example: OAuth.Responses
+  grant_type:
+    type: string
+    example: authorization_code
+    enum:
+      - authorization_code
+      - client_credentials
+      - refresh_token
+  acr_value:
+    type: string
+  id_token_encryption_alg_value:
+    type: string
+    enum:
+      - RSA-OEAP-256
+  id_token_encryption_enc_value:
+    type: string
+    enum:
+      - A256GCM
+  userinfo_signing_alg_value:
+    type: string
+    example: RS256
+    enum:
+      - PS384
+      - RS384
+      - HS256
+      - HS512
+      - RS256
+      - HS384
+      - PS256
+      - PS512
+      - RS512
+      - ES256
+      - ES384
+      - ES512
+  userinfo_encryption_alg_value:
+    type: string
+    enum:
+      - RSA-OEAP-256
+  userinfo_encryption_enc_value:
+    type: string
+    enum:
+      - A256GCM
+  request_object_signing_alg_value:
+    type: string
+    example: RS256
+    enum:
+      - PS384
+      - RS384
+      - HS256
+      - HS512
+      - RS256
+      - HS384
+      - PS256
+      - PS512
+      - RS512
+      - ES256
+      - ES384
+      - ES512
+  request_object_encryption_alg_value:
+    type: string
+    enum:
+      - RSA-OEAP-256
+  request_object_encryption_enc_value:
+    type: string
+    enum:
+      - A256GCM
+  token_endpoint_auth_method:
+    type: string
+    example: private_key_jwt
+    enum:
+      - private_key_jwt
+      - tls_client_auth
+  token_endpoint_auth_signing_alg_value:
+    type: string
+    example: RS256
+    enum:
+      - PS384
+      - RS384
+      - HS256
+      - HS512
+      - RS256
+      - HS384
+      - PS256
+      - PS512
+      - RS512
+      - ES256
+      - ES384
+      - ES512
+  claim_type:
+    type: string
+    example: normal claims
+    enum:
+      - normal claims
+      - aggregated claims
+      - distributed claims
+  GetOpenIdConfigurationResponse:
+    type: object
+    required:
+      - issuer
+      - authorization_endpoint
+      - token_endpoint
+      - jwks_uri
+      - scopes_supported
+      - response_types_supported
+      - grant_types_supported
+      - subject_types_supported
+      - id_token_signing_alg_values_supported
+      - token_endpoint_auth_methods_supported
+      - token_endpoint_auth_signing_alg_values_supported
+      - request_parameter_supported
+      - request_uri_parameter_supported
+      - pushed_authorization_request_endpoint
+      - require_pushed_authorization_requests
+    properties:
+      issuer:
+        type: string
+        description: URL del emisor del proveedor OpenID.
+        example: https://server.example.com
+      authorization_endpoint:
+        type: string
+        description: URL del punto de autorización (OAuth 2.0).
+        example: https://server.example.com/connect/authorize
+      token_endpoint:
+        type: string
+        description: URL del punto de emisión de tokens de acceso.
+        example: https://server.example.com/connect/token
+      userinfo_endpoint:
+        type: string
+        description: URL de información de usuario del proveedor OpenID.
+        example: https://server.example.com/connect/userinfo
+      jwks_uri:
+        type: string
+        description: URL de recuperación de claves JSON Web Key Set (JWKS).
+        example: https://server.example.com/jwks.json
+      registration_endpoint:
+        type: string
+        description: URL de registro.
+        example: https://server.example.com/connect/register
+      scopes_supported:
+        type: array
+        description: Ámbitos admitidos por el proveedor OpenID.
+        items:
+          $ref: '#/definitions/scopes'
+      response_types_supported:
+        type: array
+        description: Tipos de respuesta admitidos por el proveedor OpenID.
+        items:
+          $ref: '#/definitions/response_type'
+      response_modes_supported:
+        type: array
+        description: Modo de respuesta de OAuth 2.0 que admite el proveedor OpenID.
+        items:
+          $ref: '#/definitions/response_mode'
+      grant_types_supported:
+        type: array
+        description: Valores grant-types de OAuth 2.0 que admite el proveedor OpenID.
+        items:
+          $ref: '#/definitions/grant_type'
+      acr_values_supported:
+        type: array
+        description: >-
+          Referencias de clases de contexto de autenticación (Authentication
+          Context Class References) que admite el proveedor OpenID.
+        items:
+          $ref: '#/definitions/acr_value'
+      subject_types_supported:
+        type: array
+        description: Tipos de identificador de sujeto admitidos por el proveedor OpenID.
+        items:
+          $ref: '#/definitions/subject_type'
+      id_token_signing_alg_values_supported:
+        type: array
+        description: >-
+          Algoritmos de firma JWS (alg values) usados por el por el proveedor
+          OpenID para la firma de los ID Tokens (JWT). 
+        items:
+          $ref: '#/definitions/alg_value'
+      id_token_encryption_alg_values_supported:
+        type: array
+        description: >-
+          Algoritmos de cifrado JWE (alg values) admitidos por el proveedor
+          OpenID para que el ID Token codifique los Claims en un JWT.
+        items:
+          $ref: '#/definitions/id_token_encryption_alg_value'
+      id_token_encryption_enc_values_supported:
+        type: array
+        description: >-
+          Algoritmos de cifrado JWE (enc values) admitidos por el proveedor
+          OpenID para que el ID Token codifique los Claims en un JWT.
+        items:
+          $ref: '#/definitions/id_token_encryption_enc_value'
+      userinfo_signing_alg_values_supported:
+        type: array
+        description: >-
+          Algoritmos de firma JWS (alg values) admitidos por el
+          userinfo_endpoint para firmar los Claims en un JWT. 
+        items:
+          $ref: '#/definitions/userinfo_signing_alg_value'
+      userinfo_encryption_alg_values_supported:
+        type: array
+        description: >-
+          Algoritmos de cifrado JWE (alg values) admitidos por el
+          userinfo_endpoint para cifrar los Claims en un JWT.
+        items:
+          $ref: '#/definitions/userinfo_encryption_alg_value'
+      userinfo_encryption_enc_values_supported:
+        type: array
+        description: >-
+          Algoritmos de cifrado JWE (enc values) admitidos por el
+          userinfo_endpoint para cifrar los Claims en un JWT.
+        items:
+          $ref: '#/definitions/userinfo_encryption_enc_value'
+      request_object_signing_alg_values_supported:
+        type: array
+        description: >-
+          Algoritmos de firma JWS (alg values) admitidos por el proveedor OpenID
+          para validar la integridad de un Request Object que haya sido firmado
+          (JAR).
+        items:
+          $ref: '#/definitions/request_object_signing_alg_value'
+      request_object_encryption_alg_values_supported:
+        type: array
+        description: >-
+          Algoritmos de cifrado JWE (alg values) admitidos por el proveedor
+          OpenID para decifrar los Request Object que hayan sido cifrados (JAR).
+        items:
+          $ref: '#/definitions/request_object_encryption_alg_value'
+      request_object_encryption_enc_values_supported:
+        type: array
+        description: >-
+          Algoritmos de cifrado JWE (enc values) admitidos por el proveedor
+          OpenID para decifrar los Request Object que hayan sido cifrados (JAR).
+        items:
+          $ref: '#/definitions/request_object_encryption_enc_value'
+      token_endpoint_auth_methods_supported:
+        type: array
+        description: Métodos de autenticación de cliente admitidos por el token_endpoint
+        items:
+          $ref: '#/definitions/token_endpoint_auth_method'
+      token_endpoint_auth_signing_alg_values_supported:
+        type: array
+        description: >-
+          Algoritmos de firma JWS (alg values) admitidos por el proveedor OpenID
+          para validar la firma del JWT utilizado para autenticar al consumidor
+          en el token_endpoint. Se usa para el método de autenticación
+          private_key_jwt.
+        items:
+          $ref: '#/definitions/token_endpoint_auth_signing_alg_value'
+      claim_types_supported:
+        type: array
+        description: Tipos de atributos que admite el proveedor OpenID.
+        items:
+          $ref: '#/definitions/claim_type'
+      claims_supported:
+        type: array
+        description: >-
+          Lista de nombres de atributos para las que el proveedor OpenID puede
+          proporcionar valores.
+        items:
+          $ref: '#/definitions/claims'
+      claims_parameter_supported:
+        type: boolean
+        description: >-
+          Especifica si el proveedor OpenID admite el uso del parámetro "claim",
+          donde verdadero indica soporte. Si se omite, el valor predeterminado
+          es falso.
+        example: false
+      request_parameter_supported:
+        type: boolean
+        description: >-
+          Especifica si el proveedor OpenID admite el uso del parámetro de
+          solicitud (request parameter), donde verdadero indica soporte. Si se
+          omite, el valor predeterminado es falso.
+        example: false
+      request_uri_parameter_supported:
+        type: boolean
+        description: >-
+          Especifica si el proveedor OpenID admite el uso del parámetro
+          "request_uri", donde verdadero indica soporte.
+      require_request_uri_registration:
+        type: boolean
+        description: >-
+          Especifica si el proveedor OpenID requiere que algún valor de
+          "request_uri" utilizado esté prerregistrado usando el parámetro de
+          registro "request_uris". Se REQUIERE preinscripción cuando el valor es
+          verdadero. Si se omite, el valor predeterminado es falso.
+        example: false
+      pushed_authorization_request_endpoint:
+        type: string
+        description: >-
+          URL de solicitud de autorización enviada en la que un cliente puede
+          publicar una solicitud de autorización para intercambiarla por un
+          valor request_uri utilizable en el servidor de autorización.
+        example: https://server.example.com/connect/par
+      require_pushed_authorization_requests:
+        type: boolean
+        description: >-
+          Indica si el servidor de autorización acepta datos de solicitud de
+          autorización solo a través de PAR. 
+schemes:
+  - https
+consumes:
+  - application/vnd.bancolombia.v4+json
+host: gw-baas-dev.apps.ambientesbc.lab/public-partner/testing
+produces:
+  - application/vnd.bancolombia.v4+json
+securityDefinitions:
+  clientId:
+    type: apiKey
+    in: header
+    name: Client-Id
+    x-key-type: client_id
+  clientSecret:
+    type: apiKey
+    in: header
+    name: Client-Secret
+    x-key-type: client_secret
+basePath: public-partner/testingundefined

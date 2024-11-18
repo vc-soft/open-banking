@@ -1,0 +1,193 @@
+swagger: '2.0'
+info:
+  title: Open Banking Authorization - Pushed Authorization Request
+  version: 1.0.0
+  description: >-
+    Endpoint de OAuth que posibilita que las solicitudes de autorización de un
+    tercero se transmitan directamente y de manera segura al servidor de
+    autorización, evitando intermediarios como el navegador o aplicaciones
+    móviles del usuario final. 
+  x-ibm-name: pushed-authorization-request
+  contact:
+    name: Developers Support
+    email: soporteapisinternas@bancolombia.com.co
+paths:
+  /par:
+    post:
+      operationId: PushedAuthorizationRequest
+      summary: >-
+        Permite generar un identificador (request_uri) que resumirá la
+        información necesaria para la redirección evitando que el tercero envíe
+        información larga y compleja dentro de la misma.
+      description: >-
+        ### Clasificación de la información: -
+
+        Permite generar un identificador (request_uri) que resumirá la
+        información necesaria para la redirección evitando que el tercero envíe
+        información larga y compleja dentro de la misma.
+      parameters:
+        - name: Accept
+          in: header
+          required: true
+          type: string
+          description: >-
+            Indica el tipo de contenido que el cliente puede entender o
+            procesar. Ejemplo: application/json
+        - name: Content-Type
+          in: header
+          required: true
+          type: string
+          description: >-
+            Indica el formato de mensajería que es enviado hacia la API, el cual
+            debe ser application/x-www-form-urlencoded
+        - name: Content-Length
+          in: header
+          required: false
+          type: string
+          description: >-
+            Indica el tamaño del cuerpo del mensaje, en bytes, enviado al
+            destinatario. Ejemplo: "1007"
+        - name: client_id
+          in: formData
+          required: true
+          type: string
+          description: 'Identificador del tercero. Ejemplo: "36513953150489"'
+        - name: redirect_uri
+          in: formData
+          required: false
+          type: string
+          description: >-
+            URL que redirecciona al usuario final a la experiencia del Tercero,
+            luego de haberse autenticado y haber aceptado consentimientos.
+            Ejemplo: "https%3A%2F%2Fclient.example.org%2Fcb"
+        - name: scope
+          in: formData
+          required: true
+          type: string
+          description: >-
+            Identifica a qué se solicita acceso. Se compone de openid
+            (representa la solicitud de información del cliente) accounts
+            (recurso principal) consentId (consentimiento). Ejemplo:
+            "32698525411"
+        - name: state
+          in: formData
+          required: true
+          type: string
+          description: >-
+            Valor que envía el Tercero para identificar el usuario final en qué
+            punto de la experiencia está, de tal manera de poder ubicarlo cuando
+            sea redirigido con el redirect uri. Ejemplo: "xhit5yb7w"
+        - name: response_type
+          in: formData
+          required: true
+          type: string
+          description: >-
+            Tipo de respuesta esperado por el Tercero. Para el endpoint de PAR
+            el único valor permitido es "code".
+        - name: code_challenge
+          in: formData
+          required: true
+          type: string
+          description: >-
+            Se usa para proteger la entrega y validación de los códigos de
+            autorización a través del mecanismo PKCE; éste consiste en dar
+            respuesta a la solicitud del código de autorización y luego
+            validarlo en la solicitud del token, garantizando que el solicitante
+            del código de autorización sea el mismo del token. Ejemplo:
+            "K2c83acc4h0c9w6ESCrEMTJ3bwwuCHaoeK1t8U"
+        - name: code_challenge_method
+          in: formData
+          required: true
+          type: string
+          description: Utilizado para generar el hash del code_challenge. Debe ser S256.
+        - name: client_assertion_type
+          in: formData
+          required: true
+          type: string
+          description: >-
+            Tipo de client_assertion que se utilizará para autenticar al
+            cliente. Debe contener el valor
+            "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+        - name: client_assertion
+          in: formData
+          required: true
+          type: string
+          description: >-
+            Objeto JWT firmado con un algoritmo asimétrico utilizando la llave
+            privada del Tercero, con el fin de validar su identidad y que es
+            acorde al tipo definido en el client_assertion_type. Esto obedece a
+            la autenticación de private_key_jwt. Ejemplo
+            "eyJraWQiOiJrMmJkYyIsImFsZyI6IlJTMjU2In0.eyJpc3MiiJzNkJoZFJrcXQzIiwic3ViIjoiczZCaGRSa3F0MyIsImF1ZCI6Imh0dHBzOi8vc2VydmVyLmV4YW1wbGUuY29tIiwiZXhwIjoxNjI1ODY5Njc3fQ.te4IdnP_DK4hWrhTWA6fyhy3fxlAQZAhfA4lmzRdpoP5uZb-90R5YxzN1YDA8mnVdpgj_Bx1lG5r6se"
+      responses:
+        '200':
+          x-success-response: Successfull
+          schema:
+            $ref: '#/definitions/PushedAuthorizationReqResponse'
+          description: Respuesta Exitosa
+          x-ibm-languages:
+            description:
+              en: Successful response.
+          headers:
+            Content-Type:
+              type: string
+              description: >-
+                Indica el tipo de contenido de la respuesta. Ejemplo:
+                application/json;charset=utf-8
+            Date:
+              type: string
+              format: datetime
+              description: >-
+                Fecha y hora de generación del request_uri. Ejemplo: Fri, 24 Mar
+                2023 19:43:31 GMT
+  /api/par/health:
+    head:
+      operationId: healthOperation
+      responses:
+        '200':
+          description: Respuesta exitosa.
+          x-ibm-languages:
+            description:
+              en: Successful response.
+      security:
+        - clientId: []
+          clientSecret: []
+      tags:
+        - Monitoring
+definitions:
+  PushedAuthorizationReqResponse:
+    type: object
+    required:
+      - expires_in
+      - request_uri
+    properties:
+      expires_in:
+        type: number
+        description: Tiempo en segundos en el cual el request_uri expirará.
+        example: 90
+      request_uri:
+        type: string
+        description: >-
+          Identificador del recurso de autorización creado en la API y que será
+          usado por el servidor de autorización para realizar el proceso de
+          generación del token de acceso y para presentar los consentimientos al
+          cliente.
+        example: urn:ietf:params:oauth:request_uri:6esc_11ACC5bwc014ltc14eY22c
+schemes:
+  - https
+consumes:
+  - application/x-www-form-urlencoded
+host: gw-baas-dev.apps.ambientesbc.lab/public-partner/testing
+produces:
+  - application/vnd.bancolombia.v4+json
+securityDefinitions:
+  clientId:
+    type: apiKey
+    in: header
+    name: Client-Id
+    x-key-type: client_id
+  clientSecret:
+    type: apiKey
+    in: header
+    name: Client-Secret
+    x-key-type: client_secret
+basePath: public-partner/testingundefined

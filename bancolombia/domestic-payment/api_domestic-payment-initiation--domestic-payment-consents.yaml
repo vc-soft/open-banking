@@ -1,0 +1,673 @@
+swagger: '2.0'
+info:
+  title: Domestic Payment Initiation  - Domestic Payment Consents
+  version: 1.0.0
+  description: >-
+    Esta API permite realizar la creacion y consulta  del consentimiento para
+    iniciar un proceso de pago 
+  x-ibm-name: domestic-payment-initiation--domestic-payment-consents
+basePath: public-partner/testing/open-banking/v1/payment-initiation
+paths:
+  /domestic-payment-consents:
+    post:
+      operationId: DomesticPaymentConsent
+      x-api-type: traditional
+      summary: Crear consentimiento
+      description: >-
+        ### Clasificación de la información: Confidencial
+
+        Permite realizar la creacion  del consentimiento por parte del cliente
+        para iniciar un proceso de pago 
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          type: string
+          description: Token de Autorización tipo Bearer como lo indica la RFC 6750
+        - name: accept
+          in: header
+          required: false
+          type: string
+          description: >-
+            Indica el formato de mensajería que es enviado hacia la API
+            (application/json)
+        - name: content-type
+          in: header
+          required: true
+          type: string
+          description: >-
+            Indica el formato de mensajería que es enviado hacia la API
+            (application/json)       
+        - name: requestBody
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DomesticPaymentConsentRequest'
+      responses:
+        '201':
+          x-success-response: Successfull
+          schema:
+            $ref: '#/definitions/DomesticPaymentConsentResponse'
+          description: Creación
+          x-ibm-languages:
+            description:
+              en: Successful response.
+          headers:
+            content-type:
+              type: string
+              description: >-
+                Indica el formato de mensajería que es aceptado como respuesta
+                de la API (application/json)
+              x-ibm-languages:
+                description:
+                  en: >-
+                    API message format. Example:
+                    application/vnd.bancolombia.v4+json.
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '500':
+          $ref: '#/responses/500'
+      security:
+        - clientSecret: []
+          clientId: []
+      tags:
+        - Domestic Payment Consents
+  /domestic-payment-consents/{ConsentId}:
+    get:
+      operationId: DomesticPaymentConsentsStatus
+      x-api-type: traditional
+      summary: Consultar consentimiento
+      description: >-
+        ### Clasificación de la información: Interno
+
+        Permite realizar la consulta del estado del  consentimiento  para
+        iniciar un proceso de pago 
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          type: string
+          description: Token de Autorización tipo Bearer como lo indica la RFC 6750
+        - name: ConsentId
+          in: path
+          required: true
+          type: string
+          description: >-
+            Identificador del recurso de consentimiento generado para iniciar la
+            transacción
+        - name: accept
+          in: header
+          required: false
+          type: string
+          description: >-
+            Indica el formato de mensajería que es aceptado como respuesta de la
+            API (application/json)
+      responses:
+        '200':
+          x-success-response: Successfull
+          schema:
+            $ref: '#/definitions/DomesticPaymentConsentsStatusResponse'
+          description: Respuesta exitosa
+          x-ibm-languages:
+            description:
+              en: Successful response.
+          headers:
+            content-type:
+              type: string
+              description: >-
+                Indica el formato de mensajería que es aceptado como respuesta
+                de la API (application/json)
+              x-ibm-languages:
+                description:
+                  en: >-
+                    API message format. Example:
+                    application/vnd.bancolombia.v4+json.
+        '400':
+          $ref: '#/responses/400'
+        '401':
+          $ref: '#/responses/401'
+        '500':
+          $ref: '#/responses/500'
+      security:
+        - clientSecret: []
+          clientId: []
+      tags:
+        - Domestic Payment Consents
+  /health:
+    head:
+      operationId: healthOperation
+      responses:
+        '200':
+          description: Respuesta exitosa.
+          x-ibm-languages:
+            description:
+              en: Successful response.
+      security:
+        - clientId: []
+          clientSecret: []
+      tags:
+        - Monitoring
+responses:
+  '400':
+    schema:
+      $ref: '#/definitions/failure'
+    description: Error en la solicitud.
+    x-ibm-languages:
+      description:
+        en: Error in the request.
+    examples:
+      application/vnd.bancolombia.v4+json:
+        Code: 400
+        Message: Bad Resquest
+        Errors:
+          - ErrorCode: SA400
+            Detail: Número de página no proporcionado.
+    headers:
+      content-type:
+        type: string
+        description: >-
+          Indica el formato de mensajería que es aceptado como respuesta de la
+          API (application/json)
+        x-ibm-languages:
+          description:
+            en: 'API message format. Example: application/vnd.bancolombia.v4+json.'
+  '401':
+    schema:
+      $ref: '#/definitions/failure'
+    description: Credenciales incorrectas.
+    x-ibm-languages:
+      description:
+        en: Incorrect credentials.
+    examples:
+      application/vnd.bancolombia.v4+json:
+        Code: 401
+        Message: Unauthorized
+        Errors:
+          - ErrorCode: SA401
+            Detail: Consulta no autorizada por el usuario.
+    headers:
+      content-type:
+        type: string
+        description: >-
+          Indica el formato de mensajería que es aceptado como respuesta de la
+          API (application/json)
+        x-ibm-languages:
+          description:
+            en: 'API message format. Example: application/vnd.bancolombia.v4+json.'
+  '500':
+    schema:
+      $ref: '#/definitions/failure'
+    description: Error interno del servidor.
+    x-ibm-languages:
+      description:
+        en: Internal server error.
+    examples:
+      application/vnd.bancolombia.v4+json:
+        Code: 500
+        Message: Internal Server Error
+        Errors:
+          - ErrorCode: SP500
+            Detail: Ha ocurrido un error interno controlado en el servidor.
+    headers:
+      content-type:
+        type: string
+        description: >-
+          Indica el formato de mensajería que es aceptado como respuesta de la
+          API (application/json)
+        x-ibm-languages:
+          description:
+            en: 'API message format. Example: application/vnd.bancolombia.v4+json.'
+definitions:
+  DomesticPaymentConsentResponse:
+    type: object
+    required:
+      - Data
+    properties:
+      Data:
+        type: object
+        required:
+          - ConsentId
+          - ExpirationDateTime
+        properties:
+          ConsentId:
+            type: string
+            description: >-
+              Identificador del recurso de consentimiento generado para iniciar
+              la transacción
+            minLength: 1
+            maxLength: 128
+            example: '12345'
+          CustomerCreditTransferInitiation:
+            $ref: '#/definitions/CustomerCreditTransferInitiations'
+          ExpirationDateTime:
+            type: string
+            format: date-time
+            description: Fecha de expiracion del consentimiento
+            example: '2023-10-06T15:15:13+00:00'
+      Links:
+        $ref: '#/definitions/Links'
+  Debtor:
+    type: object
+    required:
+      - Identification
+      - SchemeName
+    properties:
+      Name:
+        type: string
+        description: Nombre del deudor de la transacción
+        minLength: 1
+        maxLength: 140
+        example: Edisson Sastoque
+      Identification:
+        type: string
+        description: Número de identificación del deudor de la transacción
+        minLength: 1
+        maxLength: 35
+        example: '1020804050'
+      SchemeName:
+        type: string
+        description: Tipo de identificación del deudor de la transacción
+        minLength: 2
+        maxLength: 3
+        example: CC
+        enum:
+          - CC
+          - NIT
+          - CE
+          - PA
+          - PATT
+  DebtorAccount:
+    type: object
+    required:
+      - Identification
+      - Reference
+      - Type
+    properties:
+      Identification:
+        type: string
+        description: >-
+          Identificación única de la cuenta origen de los fondos, debe ser un
+          valor ofuscado
+        minLength: 16
+        maxLength: 512
+        example: '0012557499941785'
+      Reference:
+        type: string
+        description: Últimos 4 dígitos del número de cuenta origen de los fondos
+        minLength: 4
+        maxLength: 4
+        example: '4891'
+      Type:
+        type: string
+        description: >-
+          Tipo de cuenta del origen de los fondos, seguirá los códigos
+          especificados en la lista de códigos externos de la ISO 20022, se
+          sugiere crear y publicar conjuntamente una lista específica para
+          aquellos tipos de cuenta que no se pueden homologar
+        minLength: 4
+        maxLength: 4
+        example: CACC
+        enum:
+          - CACC
+          - SVGS
+          - LAAC
+  CustomerCreditTransferInitiations:
+    type: object
+    required:
+      - Status
+      - CreationDateTime
+      - InstructionIdentification
+      - InstructedAmount
+      - Creditor
+    properties:
+      Status:
+        type: string
+        description: Estado del consentimiento
+        minLength: 1
+        maxLength: 30
+        example: AwaitingAuthorisation
+      CreationDateTime:
+        type: string
+        format: date-time
+        description: Fecha de creacion del consentimiento
+        example: '2023-10-06T15:15:13+00:00'
+      StatusUpdateDateTime:
+        type: string
+        format: date-time
+        description: Fecha de modificacion del consentimiento
+        example: '2023-10-06T15:15:13+00:00'
+      InstructionIdentification:
+        type: string
+        description: >-
+          Identificador punto a punto generado por el TPP para iniciar la
+          transacción, no cambiará a lo largo de la misma (Debe seguir el
+          formato UUID)
+        minLength: 36
+        maxLength: 36
+        example: f7defe7-0b22-4d8e-933d-f2bff99685500
+      InstructedAmount:
+        $ref: '#/definitions/InstructedAmount'
+      Debtor:
+        $ref: '#/definitions/Debtor'
+      DebtorAccount:
+        $ref: '#/definitions/DebtorAccount'
+      Creditor:
+        $ref: '#/definitions/Creditor'
+      CreditorAccount:
+        $ref: '#/definitions/CreditorAccount'
+  CreditorAccount:
+    type: object
+    required:
+      - Identification
+      - Reference
+      - Type
+    properties:
+      Identification:
+        type: string
+        description: Identificación única de la cuenta destino de los fondos
+        minLength: 16
+        maxLength: 512
+        example: '8080021325125874'
+      Reference:
+        type: string
+        description: Últimos 4 dígitos del número de cuenta destino de los fondos
+        minLength: 4
+        maxLength: 4
+        example: '1254'
+      Type:
+        type: string
+        description: >-
+          Tipo de cuenta del destino de los fondos, seguirá los códigos
+          especificados en la lista de códigos externos de la ISO 20022, se
+          sugiere crear y publicar conjuntamente una lista específica para
+          aquellos tipos de cuenta que no se pueden homologar
+        minLength: 4
+        maxLength: 4
+        example: CACC
+        enum:
+          - CACC
+          - SVGS
+          - LAAC
+  Creditor:
+    type: object
+    required:
+      - Name
+      - Identification
+      - SchemeName
+    properties:
+      Name:
+        type: string
+        description: Nombre del acreedor de la transacción
+        minLength: 1
+        maxLength: 140
+        example: DEF Electronics
+      Identification:
+        type: string
+        description: Número de identificación del acreedor de la transacción
+        minLength: 1
+        maxLength: 35
+        example: '90102030'
+      SchemeName:
+        type: string
+        description: Tipo de identificación del acreedor de la transacción
+        minLength: 2
+        maxLength: 3
+        example: NIT
+        enum:
+          - CC
+          - NIT
+          - CE
+          - PA
+          - PATT
+      RegistrationIdentification:
+        type: string
+        description: Codigo único del comercio destino de la transacción
+        minLength: 1
+        maxLength: 35
+        example: '10203040'
+  Links:
+    type: object
+    required:
+      - Self
+    properties:
+      Self:
+        type: string
+        description: >-
+          Url que le permite al TPP realizar la consulta del estado del
+          consentimiento
+        minLength: 1
+        maxLength: 256
+        example: >-
+          https://api.alphabank.com/open-banking/v3.1/pisp/domestic-payment-consents/58923
+  CustomerCreditTransferInitiation:
+    type: object
+    required:
+      - InstructionIdentification
+      - InstructedAmount
+      - Creditor
+    properties:
+      InstructionIdentification:
+        type: string
+        description: >-
+          Identificador punto a punto generado por el TPP para iniciar la
+          transacción, no cambiará a lo largo de la misma (Debe seguir el
+          formato UUID)
+        minLength: 36
+        maxLength: 36
+        example: f7defe7-0b22-4d8e-933d-f2bff99685500
+      InstructedAmount:
+        $ref: '#/definitions/InstructedAmount'
+      Debtor:
+        $ref: '#/definitions/Debtor'
+      DebtorAccount:
+        $ref: '#/definitions/DebtorAccount'
+      Creditor:
+        $ref: '#/definitions/Creditor'
+      creditorAccount:
+        $ref: '#/definitions/CreditorAccount'
+  DomesticPaymentConsentRequest:
+    type: object
+    required:
+      - Data
+    properties:
+      Data:
+        type: object
+        required:
+          - CustomerCreditTransferInitiation
+        properties:
+          CustomerCreditTransferInitiation:
+            $ref: '#/definitions/CustomerCreditTransferInitiation'
+  InstructedAmount:
+    type: object
+    required:
+      - Amount
+      - Currency
+    properties:
+      Amount:
+        type: number
+        format: float
+        description: Monto de la transacción y debe contener dos decimales
+        minLength: 4
+        maxLength: 15
+        example: '160000'
+      Currency:
+        type: string
+        description: >-
+          Moneda en la cual se ejecutó la transacción, debe seguir el formato de
+          la ISO 4217
+        minLength: 3
+        maxLength: 3
+        example: COP
+  DomesticPaymentConsentsStatusResponse:
+    type: object
+    required:
+      - Data
+    properties:
+      Data:
+        type: object
+        required:
+          - ConsentId
+          - CustomerCreditTransferInitiation
+          - ExpirationDateTime
+        properties:
+          ConsentId:
+            type: string
+            description: >-
+              Identificador del recurso de consentimiento generado para iniciar
+              la transacción
+            minLength: 1
+            maxLength: 128
+            example: '12345'
+          CustomerCreditTransferInitiation:
+            type: object
+            required:
+              - Status
+              - CreationDateTime
+              - InstructionIdentification
+              - InstructedAmount
+              - Creditor
+            properties:
+              Status:
+                type: string
+                description: Estado del consentimiento
+                minLength: 1
+                maxLength: 30
+                example: AwaitingAuthorisation
+                enum:
+                  - AwaitingAuthorization
+                  - Rejected
+                  - Authorised
+                  - Expired
+              CreationDateTime:
+                type: string
+                format: date-time
+                description: Fecha de creacion del consentimiento
+                example: '2023-10-06T15:15:13+00:00'
+              StatusUpdateDateTime:
+                type: string
+                format: date-time
+                description: Fecha de modificacion del consentimiento
+                example: '2023-10-06T15:15:13+00:00'
+              InstructionIdentification:
+                type: string
+                description: >-
+                  Identificador punto a punto generado por el TPP para iniciar
+                  la transacción, no cambiará a lo largo de la misma (Debe
+                  seguir el formato UUID)
+                minLength: 36
+                maxLength: 36
+                example: f7defe7-0b22-4d8e-933d-f2bff99685500
+              InstructedAmount:
+                $ref: '#/definitions/InstructedAmount'
+              Debtor:
+                $ref: '#/definitions/Debtor'
+              DebtorAccount:
+                $ref: '#/definitions/DebtorAccount'
+              Creditor:
+                $ref: '#/definitions/Creditor'
+              CreditorAccount:
+                $ref: '#/definitions/CreditorAccount'
+          ExpirationDateTime:
+            type: string
+            format: date-time
+            description: Fecha de expiración del consentimiento
+            example: '2023-10-06T15:15:13+00:00'
+      Links:
+        $ref: '#/definitions/Links'
+  failure:
+    type: object
+    description: Mensaje de respuesta cuando ocurre un error.
+    required:
+      - Code
+      - Message
+    properties:
+      Code:
+        type: number
+        description: >-
+          Codigo de estado HTTP (status code) asociado al mensaje de error de la
+          respuesta del llamado a la API.
+        example: 404
+      Message:
+        type: string
+        description: >-
+          Titulo asociado al codigo de estado HTTP (status code) asociado al
+          mensaje de error de la respuesta del llamado a la API.
+        example: Not Found
+      Errors:
+        type: array
+        description: Lista de errores detectados
+        items:
+          $ref: '#/definitions/error'
+  error:
+    type: object
+    required:
+      - ErrorCode
+      - Detail
+    properties:
+      ErrorCode:
+        description: An application-specific error code, expressed as a string value.
+        type: string
+        example: BP404
+      Detail:
+        description: >-
+          A human-readable explanation specific to this occurrence of the
+          problem.
+        type: string
+        example: Requested resource could not be found
+schemes:
+  - https
+consumes:
+  - application/vnd.bancolombia.v4+json
+host: gw-baas-dev.apps.ambientesbc.lab/public-partner/testing
+produces:
+  - application/vnd.bancolombia.v4+json
+securityDefinitions:
+  clientId:
+    type: apiKey
+    in: header
+    name: Client-Id
+    x-key-type: client_id
+  clientSecret:
+    type: apiKey
+    in: header
+    name: Client-Secret
+    x-key-type: client_secret
+tags:
+  - name: Monitoring
+    description: Operaciones para realizar el monitoreo de la API
+  - name: Domestic Payment Consents
+    description: >-
+      Esta API permite realizar la creacion y consulta  del consentimiento para
+      iniciar un proceso de pago 
+x-ibm-configuration:
+  testable: true
+  enforced: true
+  cors:
+    enabled: true
+  phase: realized
+  catalogs:
+    Development:
+      properties:
+        catalogName: development
+        profileTls: ''
+        endpoint: https://esbdev.bancolombia.corp:3300/ESB/SOAP/Default
+    Production:
+      properties:
+        catalogName: production
+        profileTls: ''
+        endpoint: https://esbpro.bancolombia.corp:3300/ESB/SOAP/Default
+    Testing:
+      properties:
+        catalogName: testing
+        profileTls: ''
+        endpoint: https://esbqa.bancolombia.corp:3300/ESB/SOAP/Default
+    Sandbox:
+      properties:
+        catalogName: sandbox
+        profileTls: apic-tls-profile-cluster-eks-integracion-sandbox:1.0.0
+        endpoint: https://integracion-int-qa.apps.ambientesbc.lab/
+  type: rest
+x-API-Protocol:
+  Protocols: HTTPS
