@@ -1,3 +1,6 @@
 [submodule "openbanking-uk/read-write-api-specs"]
 	path = openbanking-uk/read-write-api-specs
 	url = https://github.com/OpenBankingUK/read-write-api-specs.git
+[submodule "ConsumerDataStandardsAustralia"]
+	path = ConsumerDataStandardsAustralia
+	url = https://github.com/ConsumerDataStandardsAustralia/standards.git
