@@ -4,3 +4,6 @@
 [submodule "ConsumerDataStandardsAustralia"]
 	path = ConsumerDataStandardsAustralia
 	url = https://github.com/ConsumerDataStandardsAustralia/standards.git
+[submodule "openbanking-brasil"]
+	path = openbanking-brasil
+	url = https://github.com/OpenBanking-Brasil/openapi.git
